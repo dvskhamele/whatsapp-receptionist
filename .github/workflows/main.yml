@@ -1,0 +1,47 @@
+name: Sync Hiberius Upstream
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * 1"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout fork
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Add upstream
+        run: |
+          git remote add upstream https://github.com/Hiberius/whatsapp-receptionist.git
+          git fetch upstream
+
+      - name: Create/update sync branch
+        run: |
+          git checkout -B upstream-sync main
+          git merge upstream/main --no-edit || exit 1
+          git push origin upstream-sync --force-with-lease
+
+      - name: Create Pull Request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr create \
+            --base main \
+            --head upstream-sync \
+            --title "Sync latest Hiberius updates" \
+            --body "Automated upstream sync. Review and test the Vercel Preview before merging." \
+          || echo "Pull request may already exist."
