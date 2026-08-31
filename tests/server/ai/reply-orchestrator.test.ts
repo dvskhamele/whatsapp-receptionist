@@ -4,10 +4,10 @@
 
 import { describe, expect, it, vi } from 'vitest';
 
-import { ReplyOrchestrator, type ReplyOrchestratorInput } from '@/server/ai/reply-orchestrator';
-import type { IntentClassification, IntentClassifier } from '@/server/ai/intent-router';
-import type { DomainReplyGenerator } from '@/server/ai/domain-reply';
 import type { AiContextProvider, AiRuntimeContext } from '@/server/ai/context';
+import type { DomainReplyGenerator } from '@/server/ai/domain-reply';
+import type { IntentClassification, IntentClassifier } from '@/server/ai/intent-router';
+import { ReplyOrchestrator, type ReplyOrchestratorInput } from '@/server/ai/reply-orchestrator';
 
 // Helper per istanziare un fake AiContextProvider con superficie minima
 // (la classe ha campi privati come repository/embeddingClient che non ci servono).
@@ -109,7 +109,7 @@ describe('ReplyOrchestrator.createReply (domain reply generator)', () => {
       generate: vi.fn(async () => ({
         shouldReply: true,
         replyText: 'Ti propongo martedi alle 10.',
-        metadata: { aiEngine: { provider: 'anthropic' } },
+        metadata: { aiEngine: { provider: 'gemini' } },
       })),
     };
     const orchestrator = new ReplyOrchestrator(classifier, generator);
@@ -120,7 +120,7 @@ describe('ReplyOrchestrator.createReply (domain reply generator)', () => {
     // Assert: testo prodotto dal generator, con disclosure
     expect(plan.replyText).toContain('sono Ambrogio');
     expect(plan.replyText).toContain('martedi');
-    expect(plan.metadata).toEqual({ aiEngine: { provider: 'anthropic' } });
+    expect(plan.metadata).toEqual({ aiEngine: { provider: 'gemini' } });
     expect(generator.generate).toHaveBeenCalledTimes(1);
   });
 

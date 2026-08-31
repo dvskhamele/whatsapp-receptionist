@@ -38,7 +38,7 @@ export function usageFromLlmResult(
       : (result.inputTokens ?? 0) + (result.outputTokens ?? 0);
 
   return {
-    provider: 'anthropic',
+    provider: 'gemini',
     feature,
     model: result.model,
     inputTokens: result.inputTokens,

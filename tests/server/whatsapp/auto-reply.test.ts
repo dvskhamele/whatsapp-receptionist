@@ -1,20 +1,20 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  WhatsAppAutoReplyService,
-  type WhatsAppAutoReplyRepository,
-} from '@/server/whatsapp/auto-reply';
-import { ReplyOrchestrator } from '@/server/ai/reply-orchestrator';
-import type {
-  IntentClassification,
-  IntentClassificationInput,
-  IntentClassifier,
-} from '@/server/ai/intent-router';
 import type {
   DomainReplyGenerator,
   DomainReplyInput,
   DomainReplyResult,
 } from '@/server/ai/domain-reply';
+import type {
+  IntentClassification,
+  IntentClassificationInput,
+  IntentClassifier,
+} from '@/server/ai/intent-router';
+import { ReplyOrchestrator } from '@/server/ai/reply-orchestrator';
+import {
+  WhatsAppAutoReplyService,
+  type WhatsAppAutoReplyRepository,
+} from '@/server/whatsapp/auto-reply';
 import type {
   EnqueueOutboundMessageInput,
   EnqueueOutboundMessageResult,
@@ -248,7 +248,7 @@ class FakeLlmClassifier implements IntentClassifier {
       confidence: 0.91,
       matchedSignals: ['prezzo'],
       aiUsage: {
-        provider: 'anthropic',
+        provider: 'gemini',
         feature: 'intent_classifier',
         model: ['clau', 'de-3-5-haiku-20241022'].join(''),
         inputTokens: 80,
@@ -270,7 +270,7 @@ class FakeDomainReplyGenerator implements DomainReplyGenerator {
       replyText: 'La visita va confermata dallo studio.',
       metadata: {
         aiEngine: {
-          provider: 'anthropic',
+          provider: 'gemini',
           feature: 'domain_reply',
           model: ['clau', 'de-sonnet-4-20250514'].join(''),
           inputTokens: 40,

@@ -1,20 +1,19 @@
 import { env } from '@/lib/env';
 import { logger } from '@/lib/logging/logger';
 import type { BookingBridgeService } from '@/server/ai/booking-bridge';
-import {
-  createEscalationService,
-  type ConversationEscalator,
-  type EscalationReason,
-} from '@/server/conversations/escalation';
+import { sumAiUsageCostCents, sumAiUsageTokens, type AiUsageMetadata } from '@/server/ai/costs';
+import type { IntentClassification } from '@/server/ai/intent-router';
 import {
   createReplyOrchestrator,
   type ReplyOrchestrator,
   type ReplyPlan,
 } from '@/server/ai/reply-orchestrator';
-import type { IntentClassification } from '@/server/ai/intent-router';
-import { sumAiUsageCostCents, sumAiUsageTokens, type AiUsageMetadata } from '@/server/ai/costs';
+import {
+  createEscalationService,
+  type ConversationEscalator,
+  type EscalationReason,
+} from '@/server/conversations/escalation';
 import type { UsageLimitsService } from '@/server/usage/limits';
-import type { WhatsAppProvider } from '@/server/whatsapp/webhook-events';
 import type {
   EnqueueOutboundMessageInput,
   EnqueueOutboundMessageResult,
@@ -23,6 +22,7 @@ import type {
   TenantMessagingConfig,
   UpdateInboundMessageAnalysisInput,
 } from '@/server/whatsapp/repository';
+import type { WhatsAppProvider } from '@/server/whatsapp/webhook-events';
 
 export type WhatsAppAutoReplySource = 'text' | 'voice_transcript';
 
@@ -526,7 +526,7 @@ function aiUsageFromMetadata(value: unknown): AiUsageMetadata | null {
       : (inputTokens ?? 0) + (outputTokens ?? 0));
 
   return {
-    provider: 'anthropic',
+    provider: 'gemini',
     feature: value.feature === 'domain_reply' ? 'domain_reply' : 'intent_classifier',
     model: typeof value.model === 'string' && value.model.trim() ? value.model : 'unknown',
     inputTokens,
