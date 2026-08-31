@@ -3,7 +3,7 @@ import type { LlmCompletionResult } from '@/server/ai/llm';
 export type AiUsageFeature = 'intent_classifier' | 'domain_reply';
 
 export type AiUsageMetadata = {
-  provider: 'anthropic';
+  provider: 'gemini';
   feature: AiUsageFeature;
   model: string;
   inputTokens: number | null;

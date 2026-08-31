@@ -20,7 +20,7 @@ export type IntentClassification = {
   confidence: number;
   matchedSignals: string[];
   aiUsage?: {
-    provider: 'anthropic';
+    provider: 'gemini';
     feature: 'intent_classifier' | 'domain_reply';
     model: string;
     inputTokens: number | null;

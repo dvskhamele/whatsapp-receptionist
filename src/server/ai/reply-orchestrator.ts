@@ -1,8 +1,3 @@
-import {
-  RuleBasedIntentClassifier,
-  type IntentClassification,
-  type IntentClassifier,
-} from '@/server/ai/intent-router';
 import { env } from '@/lib/env';
 import { createAnthropicClientForModel } from '@/server/ai/anthropic-adapter';
 import {
@@ -12,6 +7,11 @@ import {
   type AiRuntimeContext,
 } from '@/server/ai/context';
 import { LlmDomainReplyGenerator, type DomainReplyGenerator } from '@/server/ai/domain-reply';
+import {
+  RuleBasedIntentClassifier,
+  type IntentClassification,
+  type IntentClassifier,
+} from '@/server/ai/intent-router';
 import { FallbackIntentClassifier, LlmIntentClassifier } from '@/server/ai/llm-intent-classifier';
 
 export type ReplyOrchestratorInput = {
@@ -131,8 +131,8 @@ export class ReplyOrchestrator {
 }
 
 export function createReplyOrchestrator(): ReplyOrchestrator {
-  const fastClient = createAnthropicClientForModel(env.ANTHROPIC_MODEL_FAST);
-  const primaryClient = createAnthropicClientForModel(env.ANTHROPIC_MODEL_PRIMARY);
+  const fastClient = createAnthropicClientForModel(env.GEMINI_MODEL);
+  const primaryClient = createAnthropicClientForModel(env.GEMINI_MODEL);
   const classifier = fastClient
     ? new FallbackIntentClassifier(new LlmIntentClassifier(fastClient))
     : new RuleBasedIntentClassifier();

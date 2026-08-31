@@ -24,6 +24,9 @@ const envSchema = z.object({
   ANTHROPIC_API_KEY: z.string().optional().default(''),
   ANTHROPIC_MODEL_PRIMARY: z.string().optional().default(''),
   ANTHROPIC_MODEL_FAST: z.string().optional().default(''),
+  GEMINI_API_KEY: z.string().optional().default(''),
+  GEMINI_MODEL: z.string().default('gemini-3.6-flash'),
+
   AMBROGIO_AI_AUTOREPLY_ENABLED: z
     .enum(['true', 'false'])
     .default('false')

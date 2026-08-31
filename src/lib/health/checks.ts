@@ -69,6 +69,9 @@ async function checkSupabase(): Promise<HealthCheck> {
     () =>
       fetch(`${url}/auth/v1/health`, {
         method: 'GET',
+        headers: {
+          apikey: process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY'] ?? '',
+        },
         signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS),
       }),
     (status) => (status >= 200 && status < 300 ? 'ok' : 'degraded'),
@@ -115,20 +118,35 @@ async function checkStripe(): Promise<HealthCheck> {
   );
 }
 
-async function checkAnthropic(): Promise<HealthCheck> {
-  const key = process.env['ANTHROPIC_API_KEY'];
-  if (!key) return notConfigured('anthropic', 'Motore AI (Anthropic)');
+async function checkGemini(): Promise<HealthCheck> {
+  const key = process.env['GEMINI_API_KEY'];
+  const model = process.env['GEMINI_MODEL'] || 'gemini-3.6-flash';
 
-  // `/v1/models` è la probe autenticata più economica: non consuma token.
+  if (!key) {
+    return notConfigured('gemini', 'Motore AI (Gemini)');
+  }
+
   return probe(
-    'anthropic',
-    'Motore AI (Anthropic)',
+    'gemini',
+    'Motore AI (Gemini)',
     () =>
-      fetch('https://api.anthropic.com/v1/models?limit=1', {
+      fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+        method: 'POST',
         headers: {
-          'x-api-key': key,
-          'anthropic-version': '2023-06-01',
+          'Content-Type': 'application/json',
+          'x-goog-api-key': key,
         },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: 'Reply with exactly: GEMINI_OK',
+                },
+              ],
+            },
+          ],
+        }),
         signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS),
       }),
     (status) => {
@@ -146,7 +164,7 @@ async function checkAnthropic(): Promise<HealthCheck> {
  * la diagnosi degli altri.
  */
 export async function runHealthChecks(): Promise<readonly HealthCheck[]> {
-  return Promise.all([checkSupabase(), checkUpstash(), checkStripe(), checkAnthropic()]);
+  return Promise.all([checkSupabase(), checkUpstash(), checkStripe(), checkGemini()]);
 }
 
 export function overallStatus(checks: readonly HealthCheck[]): HealthStatus {
