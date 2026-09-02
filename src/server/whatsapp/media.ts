@@ -1,5 +1,5 @@
-import { AppError } from '@/lib/errors/app-error';
 import { env } from '@/lib/env';
+import { AppError } from '@/lib/errors/app-error';
 import { fetchWithTimeout } from '@/lib/http/fetch-with-timeout';
 import { logger } from '@/lib/logging/logger';
 import {
@@ -114,7 +114,7 @@ export class Dialog360WhatsAppMediaClient implements WhatsAppMediaDownloader {
     }
 
     if (tenantId && this.config.credentials) {
-      return (await this.config.credentials.resolve(tenantId)).apiKey;
+      return (await this.config.credentials.resolve(tenantId)).accessToken;
     }
 
     const globalApiKey = env.WHATSAPP_API_KEY.trim();

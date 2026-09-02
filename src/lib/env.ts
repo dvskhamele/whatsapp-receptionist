@@ -42,16 +42,66 @@ const envSchema = z.object({
     .enum(['true', 'false'])
     .default('false')
     .transform((value) => value === 'true'),
+  // WHATSAPP_API_KEY: z.string().optional().default(''),
+  // WHATSAPP_API_URL: optionalUrl.default('https://waba-v2.360dialog.io'),
+  // WHATSAPP_MEDIA_MAX_BYTES: z.coerce
+  //   .number()
+  //   .int()
+  //   .positive()
+  //   .default(25 * 1024 * 1024),
+  // WHATSAPP_WEBHOOK_VERIFY_TOKEN: z.string().optional().default(''),
+  // WHATSAPP_WEBHOOK_HEADER_NAME: z.string().default('x-ambrogio-webhook-secret'),
+  // WHATSAPP_WEBHOOK_HEADER_SECRET: z.string().optional().default(''),
+  /**
+   * Legacy WhatsApp credential.
+   *
+   * During the Direct Meta POC this remains available only for
+   * backwards compatibility. New tenant credentials are stored
+   * encrypted in integrations.credentials.
+   */
   WHATSAPP_API_KEY: z.string().optional().default(''),
+
+  /**
+   * Legacy 360dialog URL.
+   *
+   * No longer used by the Direct Meta WhatsApp transport.
+   * Kept temporarily so unrelated legacy code does not fail during
+   * the POC migration.
+   */
   WHATSAPP_API_URL: optionalUrl.default('https://waba-v2.360dialog.io'),
+
+  /**
+   * Meta Graph API version used by the Direct WhatsApp Cloud API.
+   *
+   * Example:
+   * META_GRAPH_API_VERSION=v23.0
+   *
+   * Use the version currently selected/supported by the Meta app.
+   */
+  META_GRAPH_API_VERSION: z.string().default('v23.0'),
+  META_APP_SECRET: z.string().optional().default(''),
+
   WHATSAPP_MEDIA_MAX_BYTES: z.coerce
     .number()
     .int()
     .positive()
     .default(25 * 1024 * 1024),
+
+  /**
+   * Meta webhook verification token used during GET verification.
+   */
   WHATSAPP_WEBHOOK_VERIFY_TOKEN: z.string().optional().default(''),
+
+  /**
+   * Legacy custom webhook header settings.
+   *
+   * These will no longer be used for Meta webhook POST signature
+   * verification, but are retained temporarily for compatibility
+   * with unrelated/legacy code.
+   */
   WHATSAPP_WEBHOOK_HEADER_NAME: z.string().default('x-ambrogio-webhook-secret'),
   WHATSAPP_WEBHOOK_HEADER_SECRET: z.string().optional().default(''),
+
   WHATSAPP_WEBHOOK_RATE_LIMIT_MAX: z.coerce.number().int().positive().default(120),
   WHATSAPP_WEBHOOK_RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(60_000),
   /**
