@@ -136,8 +136,8 @@ export class MetaWhatsAppClient implements WhatsAppMessageSender {
     }
 
     const url = new URL(
-      `/${encodeURIComponent(phoneNumberId)}/messages`,
-      `https://graph.facebook.com/${graphApiVersion}`,
+      `/${graphApiVersion}/${encodeURIComponent(phoneNumberId)}/messages`,
+      'https://graph.facebook.com',
     );
 
     const response = await fetchWithTimeout(
@@ -243,7 +243,6 @@ export class TenantWhatsAppCredentialsResolver implements WhatsAppCredentialsRes
     private readonly store: WhatsAppCredentialsStore,
     private readonly options: {
       ttlMs?: number;
-      globalApiKey?: string;
       now?: () => number;
       logger?: CredentialsLogger;
     } = {},
@@ -300,35 +299,6 @@ export class TenantWhatsAppCredentialsResolver implements WhatsAppCredentialsRes
       };
     }
 
-    /**
-     * Legacy global fallback.
-     *
-     * The Direct Meta POC should use the tenant path above.
-     *
-     * We intentionally do NOT reference
-     * env.WHATSAPP_PHONE_NUMBER_ID because
-     * that variable does not exist in env.ts and
-     * Phone Number ID is supposed to be stored per tenant.
-     */
-    const globalApiKey = (this.options.globalApiKey ?? env.WHATSAPP_API_KEY ?? '').trim();
-
-    if (!globalApiKey) {
-      throw new AppError(
-        'internal',
-        'No WhatsApp access token and phone number ID are configured for this tenant',
-        {
-          expose: false,
-        },
-      );
-    }
-
-    /**
-     * There is no global Phone Number ID in the current
-     * environment schema.
-     *
-     * Therefore we must not silently send a message
-     * using an unknown/global number.
-     */
     throw new AppError(
       'internal',
       'No Meta WhatsApp integration with access token and phone number ID is configured for this tenant',

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { AppError } from '@/lib/errors/app-error';
 import type { VoiceTranscript } from '@/lib/elevenlabs/audio';
+import { AppError } from '@/lib/errors/app-error';
 import type {
   StoreVoiceMediaInput,
   StoredVoiceMedia,
@@ -13,8 +13,8 @@ import type {
   WhatsAppAutoReplyResult,
 } from '@/server/whatsapp/auto-reply';
 import type {
-  DownloadedWhatsAppMedia,
   DownloadWhatsAppMediaInput,
+  DownloadedWhatsAppMedia,
   WhatsAppMediaDownloader,
 } from '@/server/whatsapp/media';
 import {
@@ -270,7 +270,7 @@ class FakeVoiceRepository implements WhatsAppVoiceRepository {
       transcriptText: transcript?.transcriptText ?? null,
       transcriptLanguage: transcript?.transcriptLanguage ?? null,
       transcriptLanguageProbability: 0.98,
-      provider: 'whatsapp_360dialog',
+      provider: 'whatsapp_meta',
       whatsappMessageId: 'wamid.audio',
       phoneNumberId: 'phone_123',
       displayPhoneNumber: '390212345678',

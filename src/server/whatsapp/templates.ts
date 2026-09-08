@@ -212,7 +212,7 @@ export class SupabaseWhatsAppTemplateMessageRepository implements WhatsAppTempla
       .from('whatsapp_message_templates')
       .select('id, name, language_code, category')
       .eq('tenant_id', input.tenantId)
-      .eq('provider', 'whatsapp_360dialog')
+      .eq('provider', 'whatsapp_meta')
       .eq('name', input.name)
       .eq('language_code', input.languageCode)
       .eq('status', 'approved')

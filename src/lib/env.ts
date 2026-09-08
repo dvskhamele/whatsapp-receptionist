@@ -42,8 +42,6 @@ const envSchema = z.object({
     .enum(['true', 'false'])
     .default('false')
     .transform((value) => value === 'true'),
-  // WHATSAPP_API_KEY: z.string().optional().default(''),
-  // WHATSAPP_API_URL: optionalUrl.default('https://waba-v2.360dialog.io'),
   // WHATSAPP_MEDIA_MAX_BYTES: z.coerce
   //   .number()
   //   .int()
@@ -60,15 +58,6 @@ const envSchema = z.object({
    * encrypted in integrations.credentials.
    */
   WHATSAPP_API_KEY: z.string().optional().default(''),
-
-  /**
-   * Legacy 360dialog URL.
-   *
-   * No longer used by the Direct Meta WhatsApp transport.
-   * Kept temporarily so unrelated legacy code does not fail during
-   * the POC migration.
-   */
-  WHATSAPP_API_URL: optionalUrl.default('https://waba-v2.360dialog.io'),
 
   /**
    * Meta Graph API version used by the Direct WhatsApp Cloud API.

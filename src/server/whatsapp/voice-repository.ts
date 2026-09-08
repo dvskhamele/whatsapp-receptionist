@@ -1,5 +1,5 @@
-import { AppError } from '@/lib/errors/app-error';
 import { env } from '@/lib/env';
+import { AppError } from '@/lib/errors/app-error';
 import { createSupabaseAdminClient } from '@/lib/supabase/admin';
 import type { WhatsAppProvider } from '@/server/whatsapp/webhook-events';
 
@@ -194,7 +194,7 @@ export class SupabaseWhatsAppVoiceRepository implements WhatsAppVoiceRepository 
       transcriptText: row.transcript_text,
       transcriptLanguage: row.transcript_language,
       transcriptLanguageProbability: getOptionalNumber(transcript.languageProbability),
-      provider: 'whatsapp_360dialog',
+      provider: 'whatsapp_meta',
       whatsappMessageId: getOptionalString(payload.whatsappMessageId),
       phoneNumberId: getOptionalString(payload.phoneNumberId),
       displayPhoneNumber: getOptionalString(payload.displayPhoneNumber),

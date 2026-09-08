@@ -5,11 +5,11 @@ import { createWebhookIdempotencyKey } from '@/lib/whatsapp/webhook-security';
 describe('createWebhookIdempotencyKey', () => {
   it('creates stable provider-scoped keys', () => {
     const first = createWebhookIdempotencyKey({
-      provider: 'whatsapp_360dialog',
+      provider: 'whatsapp_meta',
       externalId: 'wamid.demo',
     });
     const second = createWebhookIdempotencyKey({
-      provider: 'whatsapp_360dialog',
+      provider: 'whatsapp_meta',
       externalId: 'wamid.demo',
     });
 

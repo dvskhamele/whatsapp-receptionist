@@ -4,8 +4,7 @@ senza necessità di validazione runtime in test. */
 
 import { describe, expect, it } from 'vitest';
 
-import { RuleBasedIntentClassifier } from '@/server/ai/intent-router';
-import { ReplyOrchestrator } from '@/server/ai/reply-orchestrator';
+import type { VoiceTranscript } from '@/lib/elevenlabs/audio';
 import {
   BookingBridgeService,
   type BookingBridgeRepository,
@@ -13,36 +12,8 @@ import {
   type ConversationBookingState,
   type CustomerAppointmentForBridge,
 } from '@/server/ai/booking-bridge';
-import {
-  WhatsAppAutoReplyService,
-  type WhatsAppAutoReplyRepository,
-} from '@/server/whatsapp/auto-reply';
-import type { VoiceTranscript } from '@/lib/elevenlabs/audio';
-import type {
-  StoreVoiceMediaInput,
-  StoredVoiceMedia,
-  TenantMediaStorage,
-} from '@/server/storage/media-storage';
-import type {
-  DownloadedWhatsAppMedia,
-  DownloadWhatsAppMediaInput,
-  WhatsAppMediaDownloader,
-} from '@/server/whatsapp/media';
-import {
-  WhatsAppVoicePipelineWorker,
-  type VoiceTranscriber,
-} from '@/server/whatsapp/voice-pipeline';
-import type {
-  ClaimedWhatsAppVoiceJob,
-  CreateVoiceEventInput,
-  UpdateMessageTranscriptInput,
-  WhatsAppVoiceReplyContext,
-  WhatsAppVoiceRepository,
-} from '@/server/whatsapp/voice-repository';
-import {
-  WhatsAppWebhookService,
-  type ProcessWhatsAppWebhookContext,
-} from '@/server/whatsapp/service';
+import { RuleBasedIntentClassifier } from '@/server/ai/intent-router';
+import { ReplyOrchestrator } from '@/server/ai/reply-orchestrator';
 import type {
   AppointmentBookingService,
   BookingSlot,
@@ -50,6 +21,20 @@ import type {
   CreateAppointmentInput,
   RescheduleAppointmentInput,
 } from '@/server/appointments/booking';
+import type {
+  StoredVoiceMedia,
+  StoreVoiceMediaInput,
+  TenantMediaStorage,
+} from '@/server/storage/media-storage';
+import {
+  WhatsAppAutoReplyService,
+  type WhatsAppAutoReplyRepository,
+} from '@/server/whatsapp/auto-reply';
+import type {
+  DownloadedWhatsAppMedia,
+  DownloadWhatsAppMediaInput,
+  WhatsAppMediaDownloader,
+} from '@/server/whatsapp/media';
 import type {
   EnqueueOutboundMessageInput,
   EnqueueOutboundMessageResult,
@@ -69,6 +54,21 @@ import type {
   WhatsAppMessageStatus,
   WhatsAppWebhookRepository,
 } from '@/server/whatsapp/repository';
+import {
+  WhatsAppWebhookService,
+  type ProcessWhatsAppWebhookContext,
+} from '@/server/whatsapp/service';
+import {
+  WhatsAppVoicePipelineWorker,
+  type VoiceTranscriber,
+} from '@/server/whatsapp/voice-pipeline';
+import type {
+  ClaimedWhatsAppVoiceJob,
+  CreateVoiceEventInput,
+  UpdateMessageTranscriptInput,
+  WhatsAppVoiceReplyContext,
+  WhatsAppVoiceRepository,
+} from '@/server/whatsapp/voice-repository';
 import { WhatsAppWebhookPayloadSchema } from '@/types/whatsapp';
 
 const tenantId = 'tenant_1';
@@ -535,7 +535,7 @@ class InMemoryWhatsAppBookingRepository
       transcriptText: transcript?.transcriptText ?? null,
       transcriptLanguage: transcript?.transcriptLanguage ?? null,
       transcriptLanguageProbability: 0.98,
-      provider: 'whatsapp_360dialog',
+      provider: 'whatsapp_meta',
       whatsappMessageId: metadataString(metadata, 'whatsappMessageId'),
       phoneNumberId: metadataString(metadata, 'phoneNumberId'),
       displayPhoneNumber: metadataString(metadata, 'displayPhoneNumber'),

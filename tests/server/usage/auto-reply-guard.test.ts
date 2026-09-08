@@ -6,10 +6,7 @@
 
 import { describe, expect, it } from 'vitest';
 
-import {
-  WhatsAppAutoReplyService,
-  type WhatsAppAutoReplyRepository,
-} from '@/server/whatsapp/auto-reply';
+import type { ReplyOrchestrator, ReplyPlan } from '@/server/ai/reply-orchestrator';
 import {
   DEFAULT_USAGE_LIMITS_CONFIG,
   UsageLimitsService,
@@ -17,7 +14,10 @@ import {
   type UsageLimitsRepository,
   type UsagePlanKey,
 } from '@/server/usage/limits';
-import type { ReplyOrchestrator, ReplyPlan } from '@/server/ai/reply-orchestrator';
+import {
+  WhatsAppAutoReplyService,
+  type WhatsAppAutoReplyRepository,
+} from '@/server/whatsapp/auto-reply';
 import type {
   EnqueueOutboundMessageInput,
   EnqueueOutboundMessageResult,
@@ -67,7 +67,7 @@ describe('WhatsAppAutoReplyService usage guard', () => {
       text: 'Quanto costa una visita?',
       occurredAt,
       source: 'text',
-      provider: 'whatsapp_360dialog',
+      provider: 'whatsapp_meta',
       whatsappMessageId: 'wamid.test',
       phoneNumberId: '123',
       displayPhoneNumber: '+39 333',
@@ -111,7 +111,7 @@ describe('WhatsAppAutoReplyService usage guard', () => {
       text: 'Quanto costa una visita?',
       occurredAt,
       source: 'text',
-      provider: 'whatsapp_360dialog',
+      provider: 'whatsapp_meta',
       whatsappMessageId: 'wamid.ok',
       phoneNumberId: '123',
       displayPhoneNumber: '+39 333',

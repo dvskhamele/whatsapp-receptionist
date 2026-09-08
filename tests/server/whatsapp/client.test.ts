@@ -1,14 +1,15 @@
 import { describe, expect, it } from 'vitest';
 
 import { AppError } from '@/lib/errors/app-error';
-import { Dialog360WhatsAppClient } from '@/server/whatsapp/client';
+import { MetaWhatsAppClient } from '@/server/whatsapp/client';
 
-describe('Dialog360WhatsAppClient', () => {
-  it('sends free-form text messages through 360dialog', async () => {
+describe('MetaWhatsAppClient', () => {
+  it('sends free-form text messages through the Meta Graph API', async () => {
     const requests: Array<{ url: string; init: RequestInit }> = [];
-    const client = new Dialog360WhatsAppClient({
-      apiUrl: 'https://waba-v2.360dialog.io',
-      apiKey: 'test_api_key',
+    const client = new MetaWhatsAppClient({
+      graphApiVersion: 'v23.0',
+      phoneNumberId: 'phone_number_1',
+      accessToken: 'test_access_token',
       fetcher: async (url, init) => {
         requests.push({ url: url.toString(), init: init ?? {} });
 
@@ -27,10 +28,10 @@ describe('Dialog360WhatsAppClient', () => {
     });
 
     expect(result.providerMessageId).toBe('wamid.outbound.1');
-    expect(requests[0]?.url).toBe('https://waba-v2.360dialog.io/messages');
+    expect(requests[0]?.url).toBe('https://graph.facebook.com/v23.0/phone_number_1/messages');
     expect(requests[0]?.init.headers).toMatchObject({
       'Content-Type': 'application/json',
-      'D360-API-KEY': 'test_api_key',
+      Authorization: 'Bearer test_access_token',
     });
     expect(JSON.parse(requests[0]?.init.body as string)).toMatchObject({
       messaging_product: 'whatsapp',
@@ -45,9 +46,10 @@ describe('Dialog360WhatsAppClient', () => {
   });
 
   it('raises an upstream error when the provider rejects the send', async () => {
-    const client = new Dialog360WhatsAppClient({
-      apiUrl: 'https://waba-v2.360dialog.io',
-      apiKey: 'test_api_key',
+    const client = new MetaWhatsAppClient({
+      graphApiVersion: 'v23.0',
+      phoneNumberId: 'phone_number_1',
+      accessToken: 'test_access_token',
       fetcher: async () => Response.json({ error: { message: 'Rejected' } }, { status: 400 }),
     });
 
@@ -59,11 +61,12 @@ describe('Dialog360WhatsAppClient', () => {
     ).rejects.toBeInstanceOf(AppError);
   });
 
-  it('sends approved template messages through 360dialog', async () => {
+  it('sends approved template messages through Meta Cloud API', async () => {
     const requests: Array<{ url: string; init: RequestInit }> = [];
-    const client = new Dialog360WhatsAppClient({
-      apiUrl: 'https://waba-v2.360dialog.io',
-      apiKey: 'test_api_key',
+    const client = new MetaWhatsAppClient({
+      graphApiVersion: 'v23.0',
+      phoneNumberId: 'phone_number_1',
+      accessToken: 'test_access_token',
       fetcher: async (url, init) => {
         requests.push({ url: url.toString(), init: init ?? {} });
 

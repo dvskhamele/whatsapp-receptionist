@@ -2,7 +2,7 @@ import { toWhatsAppPayloadRecord } from '@/lib/external-schemas/whatsapp';
 import { createWebhookIdempotencyKey } from '@/lib/whatsapp/webhook-security';
 import type { WhatsAppWebhookPayload } from '@/types/whatsapp';
 
-export const WHATSAPP_PROVIDER = 'whatsapp_360dialog' as const;
+export const WHATSAPP_PROVIDER = 'whatsapp_meta' as const;
 
 export type WhatsAppProvider = typeof WHATSAPP_PROVIDER;
 

@@ -1,12 +1,12 @@
-import { AppError, toAppError } from '@/lib/errors/app-error';
 import { transcribeVoiceMessage, type VoiceTranscript } from '@/lib/elevenlabs/audio';
+import { AppError, toAppError } from '@/lib/errors/app-error';
 import { createBookingBridgeService } from '@/server/ai/booking-bridge';
+import { createTenantMediaStorage, type TenantMediaStorage } from '@/server/storage/media-storage';
 import { createUsageLimitsService, type UsageLimitsService } from '@/server/usage/limits';
 import {
   WhatsAppAutoReplyService,
   type WhatsAppAutoReplyHandler,
 } from '@/server/whatsapp/auto-reply';
-import { createTenantMediaStorage, type TenantMediaStorage } from '@/server/storage/media-storage';
 import {
   createWhatsAppMediaDownloader,
   type DownloadedWhatsAppMedia,
@@ -118,10 +118,8 @@ export class WhatsAppVoicePipelineWorker {
       const media = await this.mediaDownloader.downloadMedia({
         mediaId: job.mediaId,
         expectedMimeType: job.mediaMimeType,
-        // Senza `tenantId` il downloader ricade sulla chiave WhatsApp globale:
-        // il media di un tenant verrebbe scaricato con le credenziali di un
-        // altro, e su un account 360dialog diverso da quello proprietario la
-        // richiesta fallisce.
+        // Media metadata and bytes must be fetched with the owning tenant's
+        // Meta access token.
         tenantId: job.tenantId,
       });
       const stored = await this.mediaStorage.storeVoiceMedia({

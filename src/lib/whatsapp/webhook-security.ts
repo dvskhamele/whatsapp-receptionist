@@ -19,10 +19,9 @@ export function assertWhatsAppWebhookSecret(headers: Headers, rawBody: string): 
     throw new AppError('webhook_rejected', 'Meta webhook signature mismatch');
   }
 }
-/** * Creates a deterministic idempotency key for provider events. * *
- *  The existing provider type is retained during the POC so that * existing database/application code does not need a migration. */
+/** Creates a deterministic idempotency key for provider events. */
 export function createWebhookIdempotencyKey(input: {
-  provider: 'whatsapp_360dialog' | 'stripe';
+  provider: 'whatsapp_meta' | 'stripe';
   externalId: string;
 }): string {
   return createHash('sha256').update(`${input.provider}:${input.externalId}`).digest('hex');

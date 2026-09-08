@@ -268,7 +268,7 @@ export class SupabaseWhatsAppWebhookRepository implements WhatsAppWebhookReposit
     const direct = await this.supabase
       .from('integrations')
       .select('id, tenant_id')
-      .eq('provider', 'whatsapp_360dialog')
+      .eq('provider', 'whatsapp_meta')
       .eq('status', 'active')
       .eq('external_account_id', phoneNumberId)
       .maybeSingle();
@@ -287,7 +287,7 @@ export class SupabaseWhatsAppWebhookRepository implements WhatsAppWebhookReposit
     const fallback = await this.supabase
       .from('integrations')
       .select('id, tenant_id')
-      .eq('provider', 'whatsapp_360dialog')
+      .eq('provider', 'whatsapp_meta')
       .eq('status', 'active')
       .contains('config', { phone_number_id: phoneNumberId })
       .maybeSingle();

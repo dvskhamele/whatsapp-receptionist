@@ -220,7 +220,7 @@ create table if not exists public.integrations (
   provider text not null
     check (
       provider in (
-        'whatsapp_360dialog',
+        'whatsapp_meta',
         'google_calendar',
         'cal_com',
         'calendly',
@@ -342,8 +342,8 @@ create table if not exists public.whatsapp_outbox_jobs (
   id uuid primary key default gen_random_uuid(),
   tenant_id uuid not null references public.tenants(id) on delete cascade,
   message_id uuid not null unique references public.messages(id) on delete cascade,
-  provider text not null default 'whatsapp_360dialog'
-    check (provider in ('whatsapp_360dialog')),
+  provider text not null default 'whatsapp_meta'
+    check (provider in ('whatsapp_meta')),
   status text not null default 'pending'
     check (
       status in (
@@ -376,8 +376,8 @@ create table if not exists public.whatsapp_outbox_jobs (
 create table if not exists public.whatsapp_message_templates (
   id uuid primary key default gen_random_uuid(),
   tenant_id uuid not null references public.tenants(id) on delete cascade,
-  provider text not null default 'whatsapp_360dialog'
-    check (provider in ('whatsapp_360dialog')),
+  provider text not null default 'whatsapp_meta'
+    check (provider in ('whatsapp_meta')),
   name text not null,
   language_code text not null default 'it',
   category text not null
@@ -407,8 +407,8 @@ create table if not exists public.whatsapp_voice_jobs (
   id uuid primary key default gen_random_uuid(),
   tenant_id uuid not null references public.tenants(id) on delete cascade,
   message_id uuid not null unique references public.messages(id) on delete cascade,
-  provider text not null default 'whatsapp_360dialog'
-    check (provider in ('whatsapp_360dialog')),
+  provider text not null default 'whatsapp_meta'
+    check (provider in ('whatsapp_meta')),
   status text not null default 'pending'
     check (
       status in (

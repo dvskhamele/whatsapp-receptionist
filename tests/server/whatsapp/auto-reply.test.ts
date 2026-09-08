@@ -165,7 +165,7 @@ function baseInput() {
     customerIdentifier: '393331112233',
     occurredAt,
     source: 'voice_transcript' as const,
-    provider: 'whatsapp_360dialog' as const,
+    provider: 'whatsapp_meta' as const,
     whatsappMessageId: 'wamid.audio',
     phoneNumberId: 'phone_123',
     displayPhoneNumber: '390212345678',

@@ -31,9 +31,26 @@ export async function requireAuthenticatedUser(): Promise<AuthenticatedUser> {
 }
 
 export async function requireSession(): Promise<AuthSession> {
-  const user = await requireAuthenticatedUser();
-  const tenantId = user.appMetadata['tenant_id'];
-  const role = user.appMetadata['role'];
+  const supabase = await createSupabaseServerClient();
+
+  // Verify/read the JWT claims created by the Supabase Access Token Hook.
+  const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
+
+  if (claimsError || !claimsData?.claims) {
+    throw new AppError('unauthorized', 'Authentication required');
+  }
+
+  const claims = claimsData.claims;
+
+  const userId = claims.sub;
+
+  const appMetadata = toPlainRecord(claims.app_metadata);
+  const tenantId = appMetadata['tenant_id'];
+  const role = appMetadata['role'];
+
+  if (typeof userId !== 'string') {
+    throw new AppError('unauthorized', 'Authentication required');
+  }
 
   if (typeof tenantId !== 'string') {
     throw new AppError('forbidden', 'Tenant claim is missing');
@@ -44,7 +61,7 @@ export async function requireSession(): Promise<AuthSession> {
   }
 
   return {
-    userId: user.userId,
+    userId,
     tenantId,
     role,
   };

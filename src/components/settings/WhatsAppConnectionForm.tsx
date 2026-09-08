@@ -115,7 +115,7 @@ export function WhatsAppConnectionForm({ status, canManage }: WhatsAppConnection
             />
             <DetailRow label="Phone number ID" value={status.phoneNumberId ?? '—'} isMono />
             <DetailRow
-              label="API key"
+              label="Meta access token"
               value={status.hasApiKey ? 'Salvata e cifrata' : 'Mancante: il canale non può inviare'}
             />
             <DetailRow label="Integrazione creata il" value={formatDate(status.connectedAt)} />
@@ -125,7 +125,7 @@ export function WhatsAppConnectionForm({ status, canManage }: WhatsAppConnection
             <p className="muted">
               Finché il numero non è collegato, i messaggi che arrivano su WhatsApp non vengono
               associati al tuo studio e Ambrogio non risponde. Compila il modulo qui sotto con i
-              dati del pannello 360dialog: bastano trenta secondi e il canale è attivo.
+              dati della Meta WhatsApp Cloud API: bastano il Phone Number ID e un access token.
             </p>
             {status.status !== null && status.status !== 'active' ? (
               <p className="helper">
@@ -182,8 +182,7 @@ export function WhatsAppConnectionForm({ status, canManage }: WhatsAppConnection
               {isConnected ? 'Aggiorna la connessione' : 'Collega il numero'}
             </h2>
             <p className="muted" style={{ fontSize: 'var(--text-sm)' }}>
-              I dati arrivano dal Client Hub di 360dialog, il provider che ospita il tuo numero
-              WhatsApp Business.
+              I dati arrivano dalla configurazione della tua app Meta WhatsApp Business.
             </p>
           </div>
 
@@ -207,9 +206,9 @@ export function WhatsAppConnectionForm({ status, canManage }: WhatsAppConnection
               disabled={isSubmitting}
             />
             <p id="phoneNumberId-help" className="helper">
-              In hub.360dialog.com apri il canale WhatsApp: il Phone number ID è nella scheda del
-              numero, accanto al nome del canale. È l&apos;identificativo con cui riconosciamo a
-              quale studio appartiene ogni messaggio in arrivo.
+              Il Phone Number ID è disponibile nella configurazione del numero in Meta Business. È
+              l&apos;identificativo con cui riconosciamo a quale studio appartiene ogni messaggio in
+              arrivo.
             </p>
           </div>
 
@@ -236,7 +235,7 @@ export function WhatsAppConnectionForm({ status, canManage }: WhatsAppConnection
 
           <div className="field">
             <label htmlFor="apiKey" className="label">
-              API key 360dialog
+              Meta access token
             </label>
             <input
               id="apiKey"
@@ -253,10 +252,8 @@ export function WhatsAppConnectionForm({ status, canManage }: WhatsAppConnection
               disabled={isSubmitting}
             />
             <p id="apiKey-help" className="helper">
-              Nel Client Hub, sezione API key del canale: la chiave viene mostrata una sola volta
-              alla generazione, quindi se non ce l&apos;hai più ne generi una nuova. La salviamo
-              cifrata e non la mostriamo mai più, nemmeno mascherata: per ogni modifica va
-              reinserita.
+              Usa un access token Meta con permessi WhatsApp Business Management e messaggistica. Lo
+              salviamo cifrato e non lo mostriamo mai più: per ogni modifica va reinserito.
             </p>
           </div>
 

@@ -1,6 +1,10 @@
-import { AppError } from '@/lib/errors/app-error';
 import { env } from '@/lib/env';
+import { AppError } from '@/lib/errors/app-error';
 import { createSupabaseAdminClient } from '@/lib/supabase/admin';
+import {
+  whatsAppCredentialsResolver,
+  type WhatsAppCredentialsResolver,
+} from '@/server/whatsapp/client';
 
 export type SyncedWhatsAppTemplateStatus =
   | 'draft'
@@ -28,7 +32,7 @@ export type SyncWhatsAppTemplatesResult = {
 };
 
 export interface WhatsAppTemplateListClient {
-  listTemplates(): Promise<unknown>;
+  listTemplates(tenantId: string): Promise<unknown>;
 }
 
 export interface WhatsAppTemplateSyncRepository {
@@ -41,32 +45,41 @@ export interface WhatsAppTemplateSyncRepository {
 
 type FetchLike = typeof fetch;
 
-export class Dialog360WhatsAppTemplateClient implements WhatsAppTemplateListClient {
+export class MetaWhatsAppTemplateClient implements WhatsAppTemplateListClient {
   constructor(
     private readonly config: {
-      apiUrl?: string;
-      apiKey?: string;
+      accessToken?: string;
+      wabaId?: string;
+      graphApiVersion?: string;
       fetcher?: FetchLike;
+      credentials?: WhatsAppCredentialsResolver;
     } = {},
   ) {}
 
-  async listTemplates(): Promise<unknown> {
-    const apiKey = this.config.apiKey ?? env.WHATSAPP_API_KEY;
+  async listTemplates(tenantId: string): Promise<unknown> {
+    const credentials = this.config.credentials
+      ? await this.config.credentials.resolve(tenantId)
+      : null;
+    const accessToken = this.config.accessToken ?? credentials?.accessToken;
+    const wabaId = this.config.wabaId?.trim() ?? (await this.resolveWabaId(tenantId));
 
-    if (!apiKey) {
-      throw new AppError('internal', 'WhatsApp API key is not configured', {
+    if (!accessToken || !wabaId) {
+      throw new AppError('internal', 'Meta WhatsApp access token and WABA ID are not configured', {
         expose: false,
       });
     }
 
-    const url = new URL('/v1/configs/templates', this.config.apiUrl ?? env.WHATSAPP_API_URL);
+    const url = new URL(
+      `/${this.config.graphApiVersion ?? env.META_GRAPH_API_VERSION}/${encodeURIComponent(wabaId)}/message_templates`,
+      'https://graph.facebook.com',
+    );
     url.searchParams.set('limit', '1000');
     url.searchParams.set('sort', 'name');
 
     const response = await (this.config.fetcher ?? fetch)(url, {
       method: 'GET',
       headers: {
-        'D360-API-KEY': apiKey,
+        Authorization: `Bearer ${accessToken}`,
       },
     });
     const rawResponse = await readJsonResponse(response);
@@ -83,6 +96,30 @@ export class Dialog360WhatsAppTemplateClient implements WhatsAppTemplateListClie
 
     return rawResponse;
   }
+
+  private async resolveWabaId(tenantId: string): Promise<string | undefined> {
+    const { data, error } = await createSupabaseAdminClient()
+      .from('integrations')
+      .select('config')
+      .eq('tenant_id', tenantId)
+      .eq('provider', 'whatsapp_meta')
+      .eq('status', 'active')
+      .maybeSingle();
+
+    if (error) {
+      throw new AppError('upstream_error', 'Failed to read Meta WABA configuration', {
+        cause: error,
+        expose: false,
+      });
+    }
+
+    const config = data?.config;
+    if (typeof config !== 'object' || config === null || !('waba_id' in config)) {
+      return undefined;
+    }
+
+    return typeof config.waba_id === 'string' ? config.waba_id.trim() : undefined;
+  }
 }
 
 export class WhatsAppTemplateSyncService {
@@ -95,7 +132,7 @@ export class WhatsAppTemplateSyncService {
     tenantId: string;
     now?: Date;
   }): Promise<SyncWhatsAppTemplatesResult> {
-    const rawResponse = await this.client.listTemplates();
+    const rawResponse = await this.client.listTemplates(input.tenantId);
     const rawTemplates = extractTemplateItems(rawResponse);
     const templates = rawTemplates
       .map(normalizeTemplate)
@@ -127,7 +164,7 @@ export class SupabaseWhatsAppTemplateSyncRepository implements WhatsAppTemplateS
   }): Promise<void> {
     const rows = input.templates.map((template) => ({
       tenant_id: input.tenantId,
-      provider: 'whatsapp_360dialog',
+      provider: 'whatsapp_meta',
       name: template.name,
       language_code: template.languageCode,
       category: template.category,
@@ -156,7 +193,7 @@ export class SupabaseWhatsAppTemplateSyncRepository implements WhatsAppTemplateS
 
 export function createWhatsAppTemplateSyncService(): WhatsAppTemplateSyncService {
   return new WhatsAppTemplateSyncService(
-    new Dialog360WhatsAppTemplateClient(),
+    new MetaWhatsAppTemplateClient({ credentials: whatsAppCredentialsResolver() }),
     new SupabaseWhatsAppTemplateSyncRepository(),
   );
 }

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { AppError } from '@/lib/errors/app-error';
+import { ReplyOrchestrator } from '@/server/ai/reply-orchestrator';
 import {
   EscalationService,
   type EscalationConversationSnapshot,
@@ -9,7 +10,6 @@ import {
   type EscalationTenantContact,
 } from '@/server/conversations/escalation';
 import type { EmailMessage, EmailSender, EmailSendResult } from '@/server/notifications/mailer';
-import { ReplyOrchestrator } from '@/server/ai/reply-orchestrator';
 import {
   WhatsAppAutoReplyService,
   type WhatsAppAutoReplyRepository,
@@ -356,7 +356,7 @@ function baseInput() {
     customerIdentifier: '393331112233',
     occurredAt,
     source: 'voice_transcript' as const,
-    provider: 'whatsapp_360dialog' as const,
+    provider: 'whatsapp_meta' as const,
     whatsappMessageId: 'wamid.audio',
     phoneNumberId: 'phone_123',
     displayPhoneNumber: '390212345678',

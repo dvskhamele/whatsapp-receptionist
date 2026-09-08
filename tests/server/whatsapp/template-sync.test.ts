@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { AppError } from '@/lib/errors/app-error';
 import {
-  Dialog360WhatsAppTemplateClient,
+  MetaWhatsAppTemplateClient,
   WhatsAppTemplateSyncService,
   extractTemplateItems,
   normalizeTemplate,
@@ -13,12 +13,13 @@ import {
 
 const now = new Date('2026-04-25T10:00:00.000Z');
 
-describe('Dialog360WhatsAppTemplateClient', () => {
-  it('fetches templates from the 360dialog template endpoint', async () => {
+describe('MetaWhatsAppTemplateClient', () => {
+  it('fetches templates from the Meta WABA Graph endpoint', async () => {
     const requests: Array<{ url: string; init: RequestInit }> = [];
-    const client = new Dialog360WhatsAppTemplateClient({
-      apiUrl: 'https://waba-v2.360dialog.io',
-      apiKey: 'test_api_key',
+    const client = new MetaWhatsAppTemplateClient({
+      graphApiVersion: 'v23.0',
+      wabaId: 'waba_1',
+      accessToken: 'test_access_token',
       fetcher: async (url, init) => {
         requests.push({ url: url.toString(), init: init ?? {} });
 
@@ -26,19 +27,20 @@ describe('Dialog360WhatsAppTemplateClient', () => {
       },
     });
 
-    await expect(client.listTemplates()).resolves.toEqual({ data: [] });
+    await expect(client.listTemplates('tenant_1')).resolves.toEqual({ data: [] });
     expect(requests[0]?.url).toBe(
-      'https://waba-v2.360dialog.io/v1/configs/templates?limit=1000&sort=name',
+      'https://graph.facebook.com/v23.0/waba_1/message_templates?limit=1000&sort=name',
     );
     expect(requests[0]?.init.headers).toMatchObject({
-      'D360-API-KEY': 'test_api_key',
+      Authorization: 'Bearer test_access_token',
     });
   });
 
   it('raises upstream errors when template fetch fails', async () => {
-    const client = new Dialog360WhatsAppTemplateClient({
-      apiUrl: 'https://waba-v2.360dialog.io',
-      apiKey: 'test_api_key',
+    const client = new MetaWhatsAppTemplateClient({
+      graphApiVersion: 'v23.0',
+      wabaId: 'waba_1',
+      accessToken: 'test_access_token',
       fetcher: async () => Response.json({ error: { message: 'Down' } }, { status: 503 }),
     });
 
@@ -140,7 +142,7 @@ describe('template normalization helpers', () => {
 class FakeTemplateListClient implements WhatsAppTemplateListClient {
   constructor(private readonly response: unknown) {}
 
-  async listTemplates(): Promise<unknown> {
+  async listTemplates(_tenantId: string): Promise<unknown> {
     return this.response;
   }
 }

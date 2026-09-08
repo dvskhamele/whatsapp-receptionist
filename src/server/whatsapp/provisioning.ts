@@ -10,7 +10,7 @@ import { WHATSAPP_PROVIDER } from './webhook-events';
  * Collegamento del numero WhatsApp di un tenant.
  *
  * Prima di questo modulo `resolveTenantByPhoneNumberId` cercava una riga
- * `integrations` con provider `whatsapp_360dialog` che nessuna riga di codice
+ * `integrations` con provider `whatsapp_meta` che nessuna riga di codice
  * scriveva mai: sette occorrenze del provider nel repository, tutte in
  * lettura. Ogni messaggio in ingresso finiva quindi in `unresolved`, e l'unico
  * modo di attivare un cliente era una INSERT manuale in produzione.
@@ -22,7 +22,7 @@ export interface WhatsAppConnectionInput {
   readonly phoneNumberId: string;
   /** Numero in formato leggibile, mostrato in interfaccia. */
   readonly displayPhoneNumber: string;
-  /** API key del provider per questo numero. Salvata cifrata. */
+  /** Meta WhatsApp Cloud API access token per questo numero. Salvato cifrato. */
   readonly apiKey: string;
 }
 

@@ -148,7 +148,7 @@ describe('SupabaseWhatsAppWebhookRepository.recordWebhookEvent', () => {
     // Act
     const result = await repo.recordWebhookEvent({
       tenantId: null,
-      provider: 'whatsapp_360dialog',
+      provider: 'whatsapp_meta',
       eventType: 'message',
       externalId: 'message:wamid.1',
       idempotencyKey: 'idem_1',
@@ -180,7 +180,7 @@ describe('SupabaseWhatsAppWebhookRepository.recordWebhookEvent', () => {
     // Act
     const result = await repo.recordWebhookEvent({
       tenantId: null,
-      provider: 'whatsapp_360dialog',
+      provider: 'whatsapp_meta',
       eventType: 'message',
       externalId: 'message:wamid.dup',
       idempotencyKey: 'idem_dup',
@@ -203,7 +203,7 @@ describe('SupabaseWhatsAppWebhookRepository.recordWebhookEvent', () => {
     await expect(
       repo.recordWebhookEvent({
         tenantId: null,
-        provider: 'whatsapp_360dialog',
+        provider: 'whatsapp_meta',
         eventType: 'message',
         externalId: 'm:1',
         idempotencyKey: 'idem',
