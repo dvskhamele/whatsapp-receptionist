@@ -290,6 +290,22 @@ Full list, including longer-term bets: [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
 ---
 
+## The skill behind it
+
+The reasoning in this codebase is packaged as an Agent Skill, so you can apply it on any
+stack rather than adopting this one:
+
+**[whatsapp-receptionist-builder](https://github.com/Hiberius/whatsapp-receptionist-builder)**
+— the webhook signature over the raw body, the 24-hour customer service window,
+idempotency against Meta retries, and double-booking prevention at the database. Plus
+offline tools for the two things you cannot test without a phone number.
+
+```
+npx skills add Hiberius/whatsapp-receptionist-builder
+```
+
+It is one of [ten](https://github.com/Hiberius/hiberius-skills) built the same way.
+
 ## Contributing
 
 Pull requests welcome — see [`CONTRIBUTING.md`](CONTRIBUTING.md).
